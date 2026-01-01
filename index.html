@@ -3,27 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UFSTAB - BP Debate & Public Speaking Tabulation</title>
+    <title>OratorHub - Debate & Public Speaking Platform</title>
+    <meta name="description" content="Comprehensive debate and public speaking tournament platform with real-time updates, payment processing, and hybrid event support">
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- PWA Support -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#3b82f6">
+    <link rel="apple-touch-icon" href="/icon-192.png">
 </head>
 <body>
     <!-- Header -->
     <header class="header">
         <div class="container">
             <div class="header-content">
-                <h1 class="logo">UFSTAB</h1>
+                <h1 class="logo">OratorHub</h1>
                 <nav class="nav">
                     <button class="nav-btn active" data-page="home">Home</button>
                     <button class="nav-btn" data-page="bp-debate">BP Debate</button>
                     <button class="nav-btn" data-page="public-speaking">Public Speaking</button>
                     <button class="nav-btn" data-page="settings">Settings</button>
                 </nav>
-                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-                    <span class="theme-icon">🌙</span>
-                </button>
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    <div id="userMenu" style="display: none;">
+                        <span id="userName" style="color: var(--text-secondary); margin-right: 0.5rem;"></span>
+                        <button class="btn btn-secondary" onclick="OratorHub.auth.logout()" style="padding: 0.5rem 1rem;">Logout</button>
+                    </div>
+                    <button class="btn btn-primary" id="loginBtn" onclick="showLoginModal()" style="padding: 0.5rem 1rem;">Login</button>
+                    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                        <span class="theme-icon">🌙</span>
+                    </button>
+                </div>
             </div>
         </div>
     </header>
@@ -668,9 +681,10 @@
                     
                     <div class="card">
                         <h3>About</h3>
-                        <p><strong>UFSTAB</strong> v1.0.0</p>
-                        <p>Modern BP Debate & Public Speaking Tabulation System</p>
-                        <p>© 2026 UFSTAB. All rights reserved.</p>
+                        <p><strong>OratorHub</strong> v2.0.0</p>
+                        <p>Comprehensive Debate & Public Speaking Platform</p>
+                        <p>Powered by Flask + PostgreSQL + Real-time SSE</p>
+                        <p>© 2026 OratorHub. All rights reserved.</p>
                     </div>
                 </div>
             </div>
@@ -680,10 +694,77 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2026 UFSTAB. Built with ❤️ for the debate community.</p>
+            <p>&copy; 2026 OratorHub. Built with ❤️ for the debate community.</p>
         </div>
     </footer>
 
+    <!-- Login/Register Modal -->
+    <div id="authModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeAuthModal()">&times;</span>
+            <div id="loginForm" class="auth-form">
+                <h2>Login to OratorHub</h2>
+                <form onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="loginEmail">Email</label>
+                        <input type="email" id="loginEmail" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" class="form-input" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary full-width">Login</button>
+                </form>
+                <p style="text-align: center; margin-top: 1rem;">
+                    Don't have an account? <a href="#" onclick="showRegisterForm(); return false;">Register</a>
+                </p>
+            </div>
+            <div id="registerForm" class="auth-form" style="display: none;">
+                <h2>Register for OratorHub</h2>
+                <form onsubmit="handleRegister(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="regEmail">Email</label>
+                            <input type="email" id="regEmail" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="regUsername">Username</label>
+                            <input type="text" id="regUsername" class="form-input" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="regFullName">Full Name</label>
+                            <input type="text" id="regFullName" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="regInstitution">Institution</label>
+                            <input type="text" id="regInstitution" class="form-input">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="regPassword">Password</label>
+                        <input type="password" id="regPassword" class="form-input" required minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label for="regRole">Role</label>
+                        <select id="regRole" class="form-input">
+                            <option value="user">Debater/Speaker</option>
+                            <option value="judge">Judge</option>
+                            <option value="organizer">Tournament Organizer</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary full-width">Register</button>
+                </form>
+                <p style="text-align: center; margin-top: 1rem;">
+                    Already have an account? <a href="#" onclick="showLoginForm(); return false;">Login</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="api-client.js"></script>
     <script src="script.js"></script>
+    <script src="app-enhanced.js"></script>
 </body>
 </html>

@@ -472,22 +472,33 @@ UFSTAB/
 │   ├── rounds.py              # Round and pairing logic
 │   ├── scores.py              # Scoring system
 │   └── sse.py                 # Real-time events
-├── migrations/                 # Database migrations
-├── uploads/                    # Uploaded files
+├── migrations/                 # Database migrations (created on init)
+├── uploads/                    # Uploaded files (created on first upload)
 ├── app.py                      # Flask application factory
+├── app-enhanced.js             # Enhanced frontend features
+├── api-client.js               # Backend API client
 ├── models.py                   # SQLAlchemy models
 ├── config.py                   # Configuration classes
 ├── requirements.txt            # Python dependencies
+├── test_api.py                 # API test suite
 ├── Dockerfile                  # Docker configuration
 ├── docker-compose.yml          # Multi-container setup
 ├── nginx.conf                  # Nginx reverse proxy config
+├── oratorhub.service           # Systemd service file
 ├── init_db.sh                  # Database initialization script
+├── backup.sh                   # Automated backup script
 ├── .env.example                # Environment variables template
 ├── .gitignore                  # Git ignore rules
 ├── index.html                  # Frontend HTML
 ├── script.js                   # Frontend JavaScript
 ├── styles.css                  # Frontend CSS
-└── README.md                   # This file
+├── manifest.json               # PWA manifest file
+├── service-worker.js           # PWA service worker
+├── README.md                   # This file
+├── API.md                      # Complete API documentation
+├── SETUP.md                    # Detailed setup guide
+├── CONTRIBUTING.md             # Contribution guidelines
+└── SUMMARY.md                  # Implementation summary
 ```
 
 ## 🎯 Roadmap & Future Features

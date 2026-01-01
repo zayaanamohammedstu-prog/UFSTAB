@@ -472,8 +472,8 @@ UFSTAB/
 │   ├── rounds.py              # Round and pairing logic
 │   ├── scores.py              # Scoring system
 │   └── sse.py                 # Real-time events
-├── migrations/                 # Database migrations (created on init)
-├── uploads/                    # Uploaded files (created on first upload)
+├── migrations/                 # Database migrations (created when needed)
+├── uploads/                    # Uploaded files (created by application)
 ├── app.py                      # Flask application factory
 ├── app-enhanced.js             # Enhanced frontend features
 ├── api-client.js               # Backend API client

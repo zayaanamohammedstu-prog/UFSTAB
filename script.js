@@ -17,13 +17,21 @@ let publicSpeakingData = {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
-    loadData();
-    initializeEventListeners();
-    initializeTheme();
-    updateRoundSelectors();
+    try {
+        loadData();
+        initializeEventListeners();
+        initializeTheme();
+        updateRoundSelectors();
+    } catch (error) {
+        console.error('Error initializing application:', error);
+        showNotification('Error loading application. Please refresh the page.', 'error');
+    }
 });
 
-// Event Listeners
+/**
+ * Initialize all event listeners for the application
+ * Sets up navigation, tabs, theme toggle, and form submissions
+ */
 function initializeEventListeners() {
     // Navigation
     document.querySelectorAll('.nav-btn').forEach(btn => {
@@ -357,8 +365,12 @@ function generateDraw() {
         return;
     }
     
-    // Shuffle teams for random pairing
-    const shuffledTeams = [...tournamentData.teams].sort(() => Math.random() - 0.5);
+    // Shuffle teams for random pairing using Fisher-Yates algorithm
+    const shuffledTeams = [...tournamentData.teams];
+    for (let i = shuffledTeams.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffledTeams[i], shuffledTeams[j]] = [shuffledTeams[j], shuffledTeams[i]];
+    }
     const rooms = [];
     
     // Create rooms (4 teams per room for BP)
@@ -388,6 +400,11 @@ function generateDraw() {
 }
 
 function assignPanel() {
+    // Ensure we have adjudicators before assigning panel
+    if (tournamentData.adjudicators.length === 0) {
+        return [];
+    }
+    
     // Sort adjudicators by rating
     const sortedAdjs = [...tournamentData.adjudicators].sort((a, b) => b.rating - a.rating);
     
@@ -1043,25 +1060,13 @@ function downloadCSV(csv, filename) {
 function showNotification(message, type = 'info') {
     // Create notification element
     const notification = document.createElement('div');
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 1rem 1.5rem;
-        background: ${type === 'success' ? 'var(--success-color)' : type === 'error' ? 'var(--danger-color)' : 'var(--primary-color)'};
-        color: white;
-        border-radius: var(--radius-md);
-        box-shadow: var(--shadow-lg);
-        z-index: 1000;
-        animation: slideIn 0.3s ease-out;
-        font-weight: 500;
-    `;
+    notification.className = `notification ${type}`;
     notification.textContent = message;
     
     document.body.appendChild(notification);
     
     setTimeout(() => {
-        notification.style.animation = 'fadeOut 0.3s ease-out';
+        notification.classList.add('fadeOut');
         setTimeout(() => notification.remove(), 300);
     }, 3000);
 }

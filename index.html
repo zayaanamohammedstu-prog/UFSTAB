@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UFSTAB - BP Debate & Public Speaking Tabulation</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="logo">UFSTAB</h1>
+                <nav class="nav">
+                    <button class="nav-btn active" data-page="home">Home</button>
+                    <button class="nav-btn" data-page="bp-debate">BP Debate</button>
+                    <button class="nav-btn" data-page="public-speaking">Public Speaking</button>
+                    <button class="nav-btn" data-page="settings">Settings</button>
+                </nav>
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Home Page -->
+            <div id="home" class="page active">
+                <div class="hero">
+                    <h2 class="hero-title">Welcome to UFSTAB</h2>
+                    <p class="hero-subtitle">Modern BP Debate & Public Speaking Tabulation System</p>
+                    <div class="hero-cards">
+                        <div class="hero-card" onclick="showPage('bp-debate')">
+                            <div class="card-icon">🎭</div>
+                            <h3>BP Debate</h3>
+                            <p>British Parliamentary debate tournament management with advanced tabulation</p>
+                            <button class="btn btn-primary">Get Started</button>
+                        </div>
+                        <div class="hero-card" onclick="showPage('public-speaking')">
+                            <div class="card-icon">🎤</div>
+                            <h3>Public Speaking</h3>
+                            <p>Comprehensive public speaking event management and scoring system</p>
+                            <button class="btn btn-primary">Get Started</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="features">
+                    <h3 class="section-title">Key Features</h3>
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">⚡</div>
+                            <h4>Lightning Fast</h4>
+                            <p>Optimized performance for smooth tabulation</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">📊</div>
+                            <h4>Advanced Analytics</h4>
+                            <p>Detailed statistics and performance insights</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">💾</div>
+                            <h4>Auto-Save</h4>
+                            <p>Never lose your data with automatic saving</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">📱</div>
+                            <h4>Responsive</h4>
+                            <p>Works perfectly on all devices</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🎨</div>
+                            <h4>Beautiful UI</h4>
+                            <p>Modern, clean, and intuitive interface</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🔒</div>
+                            <h4>Secure</h4>
+                            <p>Your tournament data is safe and private</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BP Debate Page -->
+            <div id="bp-debate" class="page">
+                <h2 class="page-title">BP Debate Tournament</h2>
+                
+                <div class="tab-nav">
+                    <button class="tab-btn active" data-tab="tournament">Tournament</button>
+                    <button class="tab-btn" data-tab="teams">Teams</button>
+                    <button class="tab-btn" data-tab="adjudicators">Adjudicators</button>
+                    <button class="tab-btn" data-tab="venues">Venues</button>
+                    <button class="tab-btn" data-tab="draw">Draw</button>
+                    <button class="tab-btn" data-tab="results">Results</button>
+                    <button class="tab-btn" data-tab="tab">Tab</button>
+                </div>
+
+                <!-- Tournament Tab -->
+                <div id="tournament" class="tab-content active">
+                    <div class="card">
+                        <h3>Tournament Setup</h3>
+                        <form id="tournamentForm" class="form">
+                            <div class="form-group">
+                                <label for="tournamentName">Tournament Name</label>
+                                <input type="text" id="tournamentName" class="form-input" placeholder="Enter tournament name" required>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="tournamentDate">Date</label>
+                                    <input type="date" id="tournamentDate" class="form-input" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="numRounds">Number of Rounds</label>
+                                    <input type="number" id="numRounds" class="form-input" min="1" max="9" value="5" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="tournamentVenue">Venue</label>
+                                <input type="text" id="tournamentVenue" class="form-input" placeholder="Tournament location">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save Tournament</button>
+                        </form>
+                        <div id="tournamentInfo" class="tournament-info" style="display: none;">
+                            <h4>Current Tournament</h4>
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <span class="info-label">Name:</span>
+                                    <span id="infoName"></span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Date:</span>
+                                    <span id="infoDate"></span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Rounds:</span>
+                                    <span id="infoRounds"></span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Venue:</span>
+                                    <span id="infoVenue"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Teams Tab -->
+                <div id="teams" class="tab-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Team Registration</h3>
+                            <button class="btn btn-primary" onclick="showTeamForm()">Add Team</button>
+                        </div>
+                        <div id="teamForm" class="form-container" style="display: none;">
+                            <form id="addTeamForm" class="form">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="teamName">Team Name</label>
+                                        <input type="text" id="teamName" class="form-input" placeholder="e.g., Cambridge A" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="teamInstitution">Institution</label>
+                                        <input type="text" id="teamInstitution" class="form-input" placeholder="University/Organization" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="speaker1">Speaker 1</label>
+                                        <input type="text" id="speaker1" class="form-input" placeholder="Full name" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="speaker2">Speaker 2</label>
+                                        <input type="text" id="speaker2" class="form-input" placeholder="Full name" required>
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">Add Team</button>
+                                    <button type="button" class="btn btn-secondary" onclick="hideTeamForm()">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div id="teamsList" class="data-table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Team Name</th>
+                                        <th>Institution</th>
+                                        <th>Speaker 1</th>
+                                        <th>Speaker 2</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="teamsTableBody">
+                                    <tr class="empty-state">
+                                        <td colspan="5">No teams registered yet. Click "Add Team" to get started.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Adjudicators Tab -->
+                <div id="adjudicators" class="tab-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Adjudicator Management</h3>
+                            <button class="btn btn-primary" onclick="showAdjudicatorForm()">Add Adjudicator</button>
+                        </div>
+                        <div id="adjudicatorForm" class="form-container" style="display: none;">
+                            <form id="addAdjudicatorForm" class="form">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="adjName">Name</label>
+                                        <input type="text" id="adjName" class="form-input" placeholder="Full name" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="adjInstitution">Institution</label>
+                                        <input type="text" id="adjInstitution" class="form-input" placeholder="University/Organization" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="adjRating">Rating (1-10)</label>
+                                        <input type="number" id="adjRating" class="form-input" min="1" max="10" value="5" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="adjType">Type</label>
+                                        <select id="adjType" class="form-input" required>
+                                            <option value="chair">Chair</option>
+                                            <option value="wing">Wing</option>
+                                            <option value="trainee">Trainee</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">Add Adjudicator</button>
+                                    <button type="button" class="btn btn-secondary" onclick="hideAdjudicatorForm()">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div id="adjudicatorsList" class="data-table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Institution</th>
+                                        <th>Rating</th>
+                                        <th>Type</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adjudicatorsTableBody">
+                                    <tr class="empty-state">
+                                        <td colspan="5">No adjudicators registered yet. Click "Add Adjudicator" to get started.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Venues Tab -->
+                <div id="venues" class="tab-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Venue Management</h3>
+                            <button class="btn btn-primary" onclick="showVenueForm()">Add Venue</button>
+                        </div>
+                        <div id="venueForm" class="form-container" style="display: none;">
+                            <form id="addVenueForm" class="form">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="venueName">Venue Name</label>
+                                        <input type="text" id="venueName" class="form-input" placeholder="e.g., Room 101" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="venueCapacity">Capacity</label>
+                                        <input type="number" id="venueCapacity" class="form-input" min="1" value="20" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="venueLocation">Location</label>
+                                    <input type="text" id="venueLocation" class="form-input" placeholder="Building/Floor">
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">Add Venue</button>
+                                    <button type="button" class="btn btn-secondary" onclick="hideVenueForm()">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div id="venuesList" class="data-table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Venue Name</th>
+                                        <th>Capacity</th>
+                                        <th>Location</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="venuesTableBody">
+                                    <tr class="empty-state">
+                                        <td colspan="4">No venues added yet. Click "Add Venue" to get started.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Draw Tab -->
+                <div id="draw" class="tab-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Round Draw</h3>
+                            <div class="card-actions">
+                                <select id="roundSelect" class="form-input" style="max-width: 200px;">
+                                    <option value="1">Round 1</option>
+                                </select>
+                                <button class="btn btn-primary" onclick="generateDraw()">Generate Draw</button>
+                                <button class="btn btn-secondary" onclick="exportDraw()">Export</button>
+                            </div>
+                        </div>
+                        <div id="drawDisplay" class="draw-container">
+                            <p class="empty-state-text">Click "Generate Draw" to create the draw for the selected round.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Tab -->
+                <div id="results" class="tab-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Enter Results</h3>
+                            <select id="resultsRoundSelect" class="form-input" style="max-width: 200px;">
+                                <option value="1">Round 1</option>
+                            </select>
+                        </div>
+                        <div id="resultsContainer">
+                            <p class="empty-state-text">Generate a draw first to enter results.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Tab -->
+                <div id="tab" class="tab-content">
+                    <div class="card">
+                        <h3>Tournament Standings</h3>
+                        <div class="tab-nav secondary">
+                            <button class="tab-btn active" data-subtab="team-tab">Team Tab</button>
+                            <button class="tab-btn" data-subtab="speaker-tab">Speaker Tab</button>
+                        </div>
+                        
+                        <div id="team-tab" class="subtab-content active">
+                            <div class="data-table-container">
+                                <table class="data-table standings-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Rank</th>
+                                            <th>Team</th>
+                                            <th>Institution</th>
+                                            <th>Points</th>
+                                            <th>Wins</th>
+                                            <th>Speaker Points</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="teamTabBody">
+                                        <tr class="empty-state">
+                                            <td colspan="6">No results available yet. Enter results to see standings.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div id="speaker-tab" class="subtab-content">
+                            <div class="data-table-container">
+                                <table class="data-table standings-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Rank</th>
+                                            <th>Speaker</th>
+                                            <th>Team</th>
+                                            <th>Institution</th>
+                                            <th>Total Points</th>
+                                            <th>Average</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="speakerTabBody">
+                                        <tr class="empty-state">
+                                            <td colspan="6">No results available yet. Enter results to see speaker standings.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Public Speaking Page -->
+            <div id="public-speaking" class="page">
+                <h2 class="page-title">Public Speaking Events</h2>
+                
+                <div class="tab-nav">
+                    <button class="tab-btn active" data-tab="ps-events">Events</button>
+                    <button class="tab-btn" data-tab="ps-speakers">Speakers</button>
+                    <button class="tab-btn" data-tab="ps-judges">Judges</button>
+                    <button class="tab-btn" data-tab="ps-scoring">Scoring</button>
+                    <button class="tab-btn" data-tab="ps-results">Results</button>
+                </div>
+
+                <!-- Events Tab -->
+                <div id="ps-events" class="tab-content active">
+                    <div class="card">
+                        <h3>Event Setup</h3>
+                        <form id="psEventForm" class="form">
+                            <div class="form-group">
+                                <label for="eventName">Event Name</label>
+                                <input type="text" id="eventName" class="form-input" placeholder="e.g., Impromptu Speaking" required>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="eventDate">Date</label>
+                                    <input type="date" id="eventDate" class="form-input" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="eventType">Event Type</label>
+                                    <select id="eventType" class="form-input" required>
+                                        <option value="impromptu">Impromptu Speaking</option>
+                                        <option value="prepared">Prepared Speaking</option>
+                                        <option value="persuasive">Persuasive Speaking</option>
+                                        <option value="informative">Informative Speaking</option>
+                                        <option value="storytelling">Storytelling</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="timeLimit">Time Limit (minutes)</label>
+                                    <input type="number" id="timeLimit" class="form-input" min="1" max="30" value="7" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="numJudges">Number of Judges</label>
+                                    <input type="number" id="numJudges" class="form-input" min="1" max="10" value="3" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save Event</button>
+                        </form>
+                        <div id="psEventInfo" class="tournament-info" style="display: none;">
+                            <h4>Current Event</h4>
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <span class="info-label">Name:</span>
+                                    <span id="psInfoName"></span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Type:</span>
+                                    <span id="psInfoType"></span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Time Limit:</span>
+                                    <span id="psInfoTime"></span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Judges:</span>
+                                    <span id="psInfoJudges"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Speakers Tab -->
+                <div id="ps-speakers" class="tab-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Speaker Registration</h3>
+                            <button class="btn btn-primary" onclick="showPSSpeakerForm()">Add Speaker</button>
+                        </div>
+                        <div id="psSpeakerForm" class="form-container" style="display: none;">
+                            <form id="addPSSpeakerForm" class="form">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="psSpeakerName">Name</label>
+                                        <input type="text" id="psSpeakerName" class="form-input" placeholder="Full name" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="psSpeakerInstitution">Institution</label>
+                                        <input type="text" id="psSpeakerInstitution" class="form-input" placeholder="School/Organization" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="psSpeakerEmail">Email</label>
+                                        <input type="email" id="psSpeakerEmail" class="form-input" placeholder="email@example.com">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="psSpeakerCategory">Category</label>
+                                        <select id="psSpeakerCategory" class="form-input">
+                                            <option value="novice">Novice</option>
+                                            <option value="intermediate">Intermediate</option>
+                                            <option value="advanced">Advanced</option>
+                                            <option value="open">Open</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">Add Speaker</button>
+                                    <button type="button" class="btn btn-secondary" onclick="hidePSSpeakerForm()">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div id="psSpeakersList" class="data-table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Institution</th>
+                                        <th>Email</th>
+                                        <th>Category</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="psSpeakersTableBody">
+                                    <tr class="empty-state">
+                                        <td colspan="5">No speakers registered yet. Click "Add Speaker" to get started.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Judges Tab -->
+                <div id="ps-judges" class="tab-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Judge Management</h3>
+                            <button class="btn btn-primary" onclick="showPSJudgeForm()">Add Judge</button>
+                        </div>
+                        <div id="psJudgeForm" class="form-container" style="display: none;">
+                            <form id="addPSJudgeForm" class="form">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="psJudgeName">Name</label>
+                                        <input type="text" id="psJudgeName" class="form-input" placeholder="Full name" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="psJudgeInstitution">Institution</label>
+                                        <input type="text" id="psJudgeInstitution" class="form-input" placeholder="Organization" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="psJudgeExpertise">Expertise Level</label>
+                                        <select id="psJudgeExpertise" class="form-input" required>
+                                            <option value="expert">Expert</option>
+                                            <option value="experienced">Experienced</option>
+                                            <option value="novice">Novice</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="psJudgeEmail">Email</label>
+                                        <input type="email" id="psJudgeEmail" class="form-input" placeholder="email@example.com">
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">Add Judge</button>
+                                    <button type="button" class="btn btn-secondary" onclick="hidePSJudgeForm()">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div id="psJudgesList" class="data-table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Institution</th>
+                                        <th>Expertise</th>
+                                        <th>Email</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="psJudgesTableBody">
+                                    <tr class="empty-state">
+                                        <td colspan="5">No judges registered yet. Click "Add Judge" to get started.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scoring Tab -->
+                <div id="ps-scoring" class="tab-content">
+                    <div class="card">
+                        <h3>Score Entry</h3>
+                        <div id="psScoringContainer">
+                            <p class="empty-state-text">Add speakers and judges first to enable scoring.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Tab -->
+                <div id="ps-results" class="tab-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Event Results</h3>
+                            <button class="btn btn-secondary" onclick="exportPSResults()">Export Results</button>
+                        </div>
+                        <div class="data-table-container">
+                            <table class="data-table standings-table">
+                                <thead>
+                                    <tr>
+                                        <th>Rank</th>
+                                        <th>Speaker</th>
+                                        <th>Institution</th>
+                                        <th>Category</th>
+                                        <th>Total Score</th>
+                                        <th>Average Score</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="psResultsBody">
+                                    <tr class="empty-state">
+                                        <td colspan="6">No scores entered yet. Enter scores to see results.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Page -->
+            <div id="settings" class="page">
+                <h2 class="page-title">Settings</h2>
+                <div class="settings-grid">
+                    <div class="card">
+                        <h3>Theme</h3>
+                        <div class="setting-item">
+                            <label>
+                                <input type="radio" name="theme" value="light" checked> Light Mode
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label>
+                                <input type="radio" name="theme" value="dark"> Dark Mode
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>Data Management</h3>
+                        <button class="btn btn-primary full-width" onclick="exportAllData()">Export All Data</button>
+                        <button class="btn btn-secondary full-width" onclick="importData()">Import Data</button>
+                        <button class="btn btn-danger full-width" onclick="clearAllData()">Clear All Data</button>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>About</h3>
+                        <p><strong>UFSTAB</strong> v1.0.0</p>
+                        <p>Modern BP Debate & Public Speaking Tabulation System</p>
+                        <p>© 2026 UFSTAB. All rights reserved.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 UFSTAB. Built with ❤️ for the debate community.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+[Unit]
+Description=OratorHub Web Application
+After=network.target postgresql.service redis.service
+
+[Service]
+Type=notify
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/oratorhub
+Environment="PATH=/var/www/oratorhub/venv/bin"
+Environment="FLASK_ENV=production"
+ExecStart=/var/www/oratorhub/venv/bin/gunicorn --bind 0.0.0.0:5000 --workers 4 --timeout 120 'app:create_app()'
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=5
+PrivateTmp=true
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

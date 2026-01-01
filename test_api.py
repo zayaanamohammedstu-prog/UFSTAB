@@ -88,7 +88,7 @@ class TestTournaments:
     
     def test_create_tournament(self, client, auth_headers):
         """Test tournament creation"""
-        start_date = datetime.now() + timedelta(days=30)
+        start_date = datetime.utcnow() + timedelta(days=30)
         end_date = start_date + timedelta(days=3)
         
         response = client.post('/api/tournaments', 
@@ -120,7 +120,7 @@ class TestTournaments:
     def test_update_tournament(self, client, auth_headers):
         """Test updating a tournament"""
         # Create tournament first
-        start_date = datetime.now() + timedelta(days=30)
+        start_date = datetime.utcnow() + timedelta(days=30)
         end_date = start_date + timedelta(days=3)
         
         create_response = client.post('/api/tournaments',
@@ -158,8 +158,8 @@ class TestTeams:
             tournament = Tournament(
                 name='Test Tournament',
                 format='BP',
-                start_date=datetime.now() + timedelta(days=30),
-                end_date=datetime.now() + timedelta(days=33),
+                start_date=datetime.utcnow() + timedelta(days=30),
+                end_date=datetime.utcnow() + timedelta(days=33),
                 organizer_id=user.id
             )
             db.session.add(tournament)

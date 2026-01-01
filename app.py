@@ -45,6 +45,21 @@ def create_app(config_name='default'):
     app.register_blueprint(scores_bp, url_prefix='/api/scores')
     app.register_blueprint(sse_bp, url_prefix='/api/stream')
     
+    # Create health check blueprint
+    from flask import Blueprint
+    health_bp = Blueprint('health', __name__)
+    
+    @health_bp.route('/health')
+    def health_check():
+        """Health check endpoint"""
+        return jsonify({
+            'status': 'healthy',
+            'service': 'OratorHub API',
+            'version': '1.0.0'
+        })
+    
+    app.register_blueprint(health_bp, url_prefix='/api')
+    
     # Serve frontend files
     @app.route('/')
     def index():
@@ -69,16 +84,6 @@ def create_app(config_name='default'):
         """Handle 500 errors"""
         db.session.rollback()
         return jsonify({'error': 'Internal server error'}), 500
-    
-    # Health check endpoint
-    @app.route('/api/health')
-    def health_check():
-        """Health check endpoint"""
-        return jsonify({
-            'status': 'healthy',
-            'service': 'OratorHub API',
-            'version': '1.0.0'
-        })
     
     # Initialize database
     with app.app_context():

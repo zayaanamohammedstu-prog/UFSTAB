@@ -24,13 +24,19 @@ def register():
     if User.query.filter_by(username=data['username']).first():
         return jsonify({'error': 'Username already taken'}), 400
     
+    # Validate and sanitize role - only allow user and judge for self-registration
+    allowed_roles = ['user', 'judge']
+    role = data.get('role', 'user')
+    if role not in allowed_roles:
+        role = 'user'  # Default to user if invalid role specified
+    
     # Create new user
     user = User(
         email=data['email'],
         username=data['username'],
         full_name=data.get('full_name'),
         institution=data.get('institution'),
-        role=data.get('role', 'user')
+        role=role
     )
     user.set_password(data['password'])
     

@@ -1,4 +1,7 @@
 #!/bin/bash
+set -e  # Exit on error
+set -u  # Treat unset variables as errors
+
 # OratorHub Backup Script
 # Backs up database and uploaded files
 
@@ -15,7 +18,7 @@ mkdir -p ${BACKUP_DIR}
 echo "OratorHub Backup Started: $(date)"
 
 # Backup PostgreSQL database
-if [ "$DATABASE_TYPE" = "postgresql" ]; then
+if [ "${DATABASE_TYPE:-postgresql}" = "postgresql" ]; then
     echo "Backing up PostgreSQL database..."
     docker exec oratorhub-db pg_dump -U oratorhub oratorhub > ${DB_BACKUP_FILE}
     
@@ -29,7 +32,7 @@ if [ "$DATABASE_TYPE" = "postgresql" ]; then
 fi
 
 # Backup SQLite database
-if [ "$DATABASE_TYPE" = "sqlite" ]; then
+if [ "${DATABASE_TYPE:-}" = "sqlite" ]; then
     echo "Backing up SQLite database..."
     cp oratorhub.db ${BACKUP_DIR}/db_${TIMESTAMP}.db
     

@@ -18,8 +18,8 @@ class User(db.Model):
     full_name = db.Column(db.String(120))
     role = db.Column(db.String(20), default='user')  # user, judge, admin, organizer
     institution = db.Column(db.String(200))
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.utcnow())
+    updated_at = db.Column(db.DateTime, default=lambda: datetime.utcnow(), onupdate=lambda: datetime.utcnow())
     is_active = db.Column(db.Boolean, default=True)
     
     # Relationships
@@ -65,8 +65,8 @@ class Tournament(db.Model):
     registration_deadline = db.Column(db.DateTime)
     event_type = db.Column(db.String(20), default='in-person')  # in-person, virtual, hybrid
     status = db.Column(db.String(20), default='upcoming')  # upcoming, ongoing, completed
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.utcnow())
+    updated_at = db.Column(db.DateTime, default=lambda: datetime.utcnow(), onupdate=lambda: datetime.utcnow())
     
     # Foreign Keys
     organizer_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
@@ -111,8 +111,8 @@ class Registration(db.Model):
     payment_id = db.Column(db.String(200))
     status = db.Column(db.String(20), default='pending')  # pending, confirmed, waitlist, cancelled
     document_url = db.Column(db.String(500))
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.utcnow())
+    updated_at = db.Column(db.DateTime, default=lambda: datetime.utcnow(), onupdate=lambda: datetime.utcnow())
     
     # Relationships
     tournament = db.relationship('Tournament', back_populates='registrations')
@@ -145,7 +145,7 @@ class Team(db.Model):
     points = db.Column(db.Integer, default=0)
     wins = db.Column(db.Integer, default=0)
     speaker_points = db.Column(db.Float, default=0.0)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.utcnow())
     
     # Relationships
     tournament = db.relationship('Tournament', back_populates='teams')
@@ -175,7 +175,7 @@ class Round(db.Model):
     info_slide = db.Column(db.Text)
     motion_release_time = db.Column(db.DateTime)
     status = db.Column(db.String(20), default='pending')  # pending, active, completed
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.utcnow())
     
     # Relationships
     tournament = db.relationship('Tournament', back_populates='rounds')
@@ -248,7 +248,7 @@ class Score(db.Model):
     score = db.Column(db.Float, nullable=False)
     feedback = db.Column(db.Text)
     rank = db.Column(db.Integer)  # Team rank in room
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.utcnow())
     
     # Relationships
     pairing = db.relationship('Pairing', back_populates='scores')
@@ -276,7 +276,7 @@ class Feedback(db.Model):
     style_score = db.Column(db.Integer)
     strategy_score = db.Column(db.Integer)
     comments = db.Column(db.Text)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.utcnow())
     
     def to_dict(self):
         """Convert to dictionary"""

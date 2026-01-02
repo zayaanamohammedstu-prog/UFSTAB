@@ -4,9 +4,28 @@ Tournament API endpoints
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime
+import re
 from models import db, Tournament, User
 
 tournaments_bp = Blueprint('tournaments', __name__)
+
+def generate_slug(name, tournament_id=None):
+    """Generate a URL-friendly slug from tournament name"""
+    # Convert to lowercase and replace spaces with hyphens
+    slug = re.sub(r'[^\w\s-]', '', name.lower())
+    slug = re.sub(r'[-\s]+', '-', slug).strip('-')
+    
+    # Ensure uniqueness
+    base_slug = slug
+    counter = 1
+    while True:
+        existing = Tournament.query.filter_by(slug=slug).first()
+        if not existing or (tournament_id and existing.id == tournament_id):
+            break
+        slug = f"{base_slug}-{counter}"
+        counter += 1
+    
+    return slug
 
 @tournaments_bp.route('', methods=['GET'])
 def get_tournaments():
@@ -41,9 +60,13 @@ def create_tournament():
     if not all(field in data for field in required_fields):
         return jsonify({'error': 'Missing required fields'}), 400
     
+    # Generate slug
+    slug = generate_slug(data['name'])
+    
     # Create tournament
     tournament = Tournament(
         name=data['name'],
+        slug=slug,
         description=data.get('description'),
         format=data['format'],
         start_date=datetime.fromisoformat(data['start_date'].replace('Z', '+00:00')),
@@ -54,6 +77,11 @@ def create_tournament():
         max_participants=data.get('max_participants'),
         registration_deadline=datetime.fromisoformat(data['registration_deadline'].replace('Z', '+00:00')) if data.get('registration_deadline') else None,
         event_type=data.get('event_type', 'in-person'),
+        custom_logo_url=data.get('custom_logo_url'),
+        primary_color=data.get('primary_color', '#3b82f6'),
+        secondary_color=data.get('secondary_color', '#10b981'),
+        custom_css=data.get('custom_css'),
+        show_public_tab=data.get('show_public_tab', True),
         organizer_id=user_id
     )
     
@@ -85,6 +113,8 @@ def update_tournament(tournament_id):
     # Update fields
     if 'name' in data:
         tournament.name = data['name']
+        # Regenerate slug if name changes
+        tournament.slug = generate_slug(data['name'], tournament.id)
     if 'description' in data:
         tournament.description = data['description']
     if 'format' in data:
@@ -105,6 +135,18 @@ def update_tournament(tournament_id):
         tournament.status = data['status']
     if 'event_type' in data:
         tournament.event_type = data['event_type']
+    
+    # Update customization fields
+    if 'custom_logo_url' in data:
+        tournament.custom_logo_url = data['custom_logo_url']
+    if 'primary_color' in data:
+        tournament.primary_color = data['primary_color']
+    if 'secondary_color' in data:
+        tournament.secondary_color = data['secondary_color']
+    if 'custom_css' in data:
+        tournament.custom_css = data['custom_css']
+    if 'show_public_tab' in data:
+        tournament.show_public_tab = data['show_public_tab']
     
     db.session.commit()
     
@@ -151,6 +193,59 @@ def get_tournament_standings(tournament_id):
     
     if not tournament:
         return jsonify({'error': 'Tournament not found'}), 404
+    
+    # Get teams sorted by points, then speaker points
+    teams = tournament.teams.order_by(
+        db.desc('points'),
+        db.desc('speaker_points')
+    ).all()
+    
+    standings = []
+    for rank, team in enumerate(teams, 1):
+        team_dict = team.to_dict()
+        team_dict['rank'] = rank
+        standings.append(team_dict)
+    
+    return jsonify(standings), 200
+
+@tournaments_bp.route('/public/<slug>', methods=['GET'])
+def get_tournament_by_slug(slug):
+    """Get tournament by slug for public display (no authentication required)"""
+    tournament = Tournament.query.filter_by(slug=slug).first()
+    
+    if not tournament:
+        return jsonify({'error': 'Tournament not found'}), 404
+    
+    if not tournament.show_public_tab:
+        return jsonify({'error': 'Public display is not enabled for this tournament'}), 403
+    
+    # Return tournament data without sensitive organizer information
+    return jsonify(tournament.to_dict(include_organizer=False)), 200
+
+@tournaments_bp.route('/public/<slug>/teams', methods=['GET'])
+def get_public_tournament_teams(slug):
+    """Get teams for public display"""
+    tournament = Tournament.query.filter_by(slug=slug).first()
+    
+    if not tournament:
+        return jsonify({'error': 'Tournament not found'}), 404
+    
+    if not tournament.show_public_tab:
+        return jsonify({'error': 'Public display is not enabled for this tournament'}), 403
+    
+    teams = tournament.teams.all()
+    return jsonify([t.to_dict() for t in teams]), 200
+
+@tournaments_bp.route('/public/<slug>/standings', methods=['GET'])
+def get_public_tournament_standings(slug):
+    """Get standings for public display"""
+    tournament = Tournament.query.filter_by(slug=slug).first()
+    
+    if not tournament:
+        return jsonify({'error': 'Tournament not found'}), 404
+    
+    if not tournament.show_public_tab:
+        return jsonify({'error': 'Public display is not enabled for this tournament'}), 403
     
     # Get teams sorted by points, then speaker points
     teams = tournament.teams.order_by(

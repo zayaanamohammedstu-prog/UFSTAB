@@ -54,6 +54,7 @@ class Tournament(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200), nullable=False)
+    slug = db.Column(db.String(250), unique=True, index=True)  # For public URL access
     description = db.Column(db.Text)
     format = db.Column(db.String(50), nullable=False)  # BP, APDA, WSDC, etc.
     start_date = db.Column(db.DateTime, nullable=False)
@@ -65,6 +66,14 @@ class Tournament(db.Model):
     registration_deadline = db.Column(db.DateTime)
     event_type = db.Column(db.String(20), default='in-person')  # in-person, virtual, hybrid
     status = db.Column(db.String(20), default='upcoming')  # upcoming, ongoing, completed
+    
+    # Customization fields
+    custom_logo_url = db.Column(db.String(500))  # URL to custom logo
+    primary_color = db.Column(db.String(7), default='#3b82f6')  # Hex color for theme
+    secondary_color = db.Column(db.String(7), default='#10b981')  # Secondary theme color
+    custom_css = db.Column(db.Text)  # Custom CSS for branding
+    show_public_tab = db.Column(db.Boolean, default=True)  # Whether to show public display
+    
     created_at = db.Column(db.DateTime, default=lambda: datetime.utcnow())
     updated_at = db.Column(db.DateTime, default=lambda: datetime.utcnow(), onupdate=lambda: datetime.utcnow())
     
@@ -77,11 +86,12 @@ class Tournament(db.Model):
     rounds = db.relationship('Round', back_populates='tournament', lazy='dynamic', cascade='all, delete-orphan')
     teams = db.relationship('Team', back_populates='tournament', lazy='dynamic', cascade='all, delete-orphan')
     
-    def to_dict(self):
+    def to_dict(self, include_organizer=True):
         """Convert to dictionary"""
-        return {
+        data = {
             'id': self.id,
             'name': self.name,
+            'slug': self.slug,
             'description': self.description,
             'format': self.format,
             'start_date': self.start_date.isoformat(),
@@ -93,8 +103,14 @@ class Tournament(db.Model):
             'registration_deadline': self.registration_deadline.isoformat() if self.registration_deadline else None,
             'event_type': self.event_type,
             'status': self.status,
-            'organizer': self.organizer.to_dict() if self.organizer else None
+            'custom_logo_url': self.custom_logo_url,
+            'primary_color': self.primary_color,
+            'secondary_color': self.secondary_color,
+            'show_public_tab': self.show_public_tab
         }
+        if include_organizer:
+            data['organizer'] = self.organizer.to_dict() if self.organizer else None
+        return data
 
 class Registration(db.Model):
     """Registration model for tournament participants"""

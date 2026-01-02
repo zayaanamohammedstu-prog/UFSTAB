@@ -1,0 +1,6 @@
+email,name,registration_type,team_name,partner_name,partner_email
+john.doe@example.com,John Doe,individual,,,
+jane.smith@example.com,Jane Smith,team,Cambridge A,John Doe,john.doe@example.com
+alice.johnson@example.com,Alice Johnson,individual,,,
+bob.wilson@example.com,Bob Wilson,team,Oxford B,Carol Davis,carol.davis@example.com
+carol.davis@example.com,Carol Davis,team,Oxford B,Bob Wilson,bob.wilson@example.com

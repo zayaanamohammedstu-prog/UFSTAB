@@ -86,19 +86,34 @@ async function handleCustomizationSubmit(e) {
  */
 function copyPublicUrl() {
     const publicUrlInput = document.getElementById('publicUrl');
-    publicUrlInput.select();
-    publicUrlInput.setSelectionRange(0, 99999); // For mobile devices
+    const url = publicUrlInput.value;
+    
+    // Use modern Clipboard API
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(url).then(() => {
+            showNotification('Public URL copied to clipboard!', 'success');
+        }).catch(() => {
+            // Fallback to older method
+            copyToClipboardFallback(publicUrlInput);
+        });
+    } else {
+        // Fallback for older browsers or non-secure contexts
+        copyToClipboardFallback(publicUrlInput);
+    }
+}
+
+/**
+ * Fallback method for copying to clipboard
+ */
+function copyToClipboardFallback(input) {
+    input.select();
+    input.setSelectionRange(0, 99999); // For mobile devices
     
     try {
         document.execCommand('copy');
         showNotification('Public URL copied to clipboard!', 'success');
     } catch (err) {
-        // Fallback for modern browsers
-        navigator.clipboard.writeText(publicUrlInput.value).then(() => {
-            showNotification('Public URL copied to clipboard!', 'success');
-        }).catch(() => {
-            showNotification('Failed to copy URL', 'error');
-        });
+        showNotification('Failed to copy URL. Please copy manually.', 'error');
     }
 }
 

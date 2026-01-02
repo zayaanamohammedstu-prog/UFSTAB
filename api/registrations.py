@@ -265,7 +265,9 @@ def import_registrations(tournament_id):
                             full_name=name if name else email.split('@')[0],
                             role='user'
                         )
-                        user.set_password('changeme123')  # Default password
+                        # TODO: Security improvement - Generate random password and send via email
+                        # For now, using default password that users must change on first login
+                        user.set_password('changeme123')  # Default password - MUST BE CHANGED
                         db.session.add(user)
                         db.session.flush()  # Get user ID without committing
                     
@@ -340,7 +342,9 @@ def import_registrations(tournament_id):
                                 full_name=name if name else email.split('@')[0],
                                 role='user'
                             )
-                            user.set_password('changeme123')
+                            # TODO: Security improvement - Generate random password and send via email
+                            # For now, using default password that users must change on first login
+                            user.set_password('changeme123')  # Default password - MUST BE CHANGED
                             db.session.add(user)
                             db.session.flush()
                         

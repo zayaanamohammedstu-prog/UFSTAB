@@ -152,6 +152,8 @@ Content-Type: multipart/form-data
 file: <CSV or Excel file>
 ```
 
+**Note**: For CSV files with complex data (quoted values containing commas), use Excel format or ensure your CSV generator properly escapes special characters.
+
 ## Security Considerations
 
 ### Public Display
@@ -163,7 +165,8 @@ file: <CSV or Excel file>
 - Only tournament organizers can import registrations
 - Duplicate email addresses are rejected
 - Invalid data is reported but doesn't stop the import process
-- Default passwords should be changed by users on first login
+- **Default Password Security**: Imported users receive a default password (`changeme123`) that MUST be changed on first login. For production, consider implementing email-based password setup.
+- **CSV Limitations**: Basic CSV parser doesn't handle RFC 4180 quoted fields. Use Excel format for complex data.
 
 ## Troubleshooting
 
@@ -176,6 +179,7 @@ file: <CSV or Excel file>
 - **"Missing email address"**: Every row must have an email
 - **"Already registered"**: User has already registered for this tournament
 - **"File format not supported"**: Only CSV, XLSX, and XLS files are accepted
+- **CSV parsing errors**: If you have commas in data fields, use Excel format or ensure proper CSV escaping
 - **Excel support not available**: Install the `openpyxl` package: `pip install openpyxl`
 
 ### Customization Not Showing

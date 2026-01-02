@@ -195,9 +195,10 @@ def get_tournament_standings(tournament_id):
         return jsonify({'error': 'Tournament not found'}), 404
     
     # Get teams sorted by points, then speaker points
-    teams = tournament.teams.order_by(
-        db.desc('points'),
-        db.desc('speaker_points')
+    from models import Team
+    teams = Team.query.filter_by(tournament_id=tournament_id).order_by(
+        Team.points.desc(),
+        Team.speaker_points.desc()
     ).all()
     
     standings = []
@@ -248,9 +249,10 @@ def get_public_tournament_standings(slug):
         return jsonify({'error': 'Public display is not enabled for this tournament'}), 403
     
     # Get teams sorted by points, then speaker points
-    teams = tournament.teams.order_by(
-        db.desc('points'),
-        db.desc('speaker_points')
+    from models import Team
+    teams = Team.query.filter_by(tournament_id=tournament.id).order_by(
+        Team.points.desc(),
+        Team.speaker_points.desc()
     ).all()
     
     standings = []

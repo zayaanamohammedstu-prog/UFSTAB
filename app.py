@@ -66,6 +66,11 @@ def create_app(config_name='default'):
         """Serve the main HTML file"""
         return send_from_directory('.', 'index.html')
     
+    @app.route('/public-display')
+    def public_display():
+        """Serve the public tournament display page"""
+        return send_from_directory('.', 'public-display.html')
+    
     @app.route('/<path:path>')
     def serve_static(path):
         """Serve static files"""

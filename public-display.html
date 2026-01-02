@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tournament Display - OratorHub</title>
+    <meta name="description" content="Public tournament display for OratorHub">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Public display specific styles */
+        .public-header {
+            background: linear-gradient(135deg, var(--primary-color, #3b82f6) 0%, var(--secondary-color, #10b981) 100%);
+            padding: 2rem 1rem;
+            text-align: center;
+            color: white;
+            margin-bottom: 2rem;
+        }
+        
+        .tournament-logo {
+            max-width: 200px;
+            max-height: 100px;
+            margin-bottom: 1rem;
+        }
+        
+        .public-header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .public-header p {
+            margin: 0.5rem 0 0 0;
+            font-size: 1.2rem;
+            opacity: 0.95;
+        }
+        
+        .public-nav {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            padding: 1rem 0;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 2rem;
+        }
+        
+        .public-nav-btn {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--primary-color, #3b82f6);
+            background: white;
+            color: var(--primary-color, #3b82f6);
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .public-nav-btn:hover {
+            background: var(--primary-color, #3b82f6);
+            color: white;
+        }
+        
+        .public-nav-btn.active {
+            background: var(--primary-color, #3b82f6);
+            color: white;
+        }
+        
+        .public-section {
+            display: none;
+        }
+        
+        .public-section.active {
+            display: block;
+        }
+        
+        .info-card {
+            background: var(--card-bg);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .info-item {
+            padding: 1rem;
+            background: var(--bg);
+            border-radius: 0.5rem;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .info-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-top: 0.25rem;
+        }
+        
+        .standings-card {
+            background: var(--card-bg);
+            border-radius: 0.75rem;
+            padding: 0;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .standings-header {
+            background: var(--primary-color, #3b82f6);
+            color: white;
+            padding: 1rem 1.5rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+        
+        .standings-table {
+            width: 100%;
+        }
+        
+        .standings-table td {
+            padding: 1rem;
+        }
+        
+        .rank-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        
+        .rank-1 {
+            background: gold;
+            color: #000;
+        }
+        
+        .rank-2 {
+            background: silver;
+            color: #000;
+        }
+        
+        .rank-3 {
+            background: #cd7f32;
+            color: white;
+        }
+        
+        .rank-other {
+            background: var(--bg);
+            color: var(--text-primary);
+        }
+        
+        .auto-refresh-banner {
+            background: var(--secondary-color, #10b981);
+            color: white;
+            padding: 0.5rem;
+            text-align: center;
+            font-size: 0.875rem;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+        
+        .error-message {
+            background: #fee;
+            border: 1px solid #fcc;
+            color: #c33;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="auto-refresh-banner" id="refreshBanner">
+        Auto-refreshing every 30 seconds
+    </div>
+    
+    <div class="public-header" id="tournamentHeader">
+        <div class="container">
+            <img id="tournamentLogo" class="tournament-logo" style="display: none;" alt="Tournament Logo">
+            <h1 id="tournamentName">Loading...</h1>
+            <p id="tournamentDetails"></p>
+        </div>
+    </div>
+
+    <main class="main">
+        <div class="container">
+            <div class="public-nav" id="publicNav">
+                <button class="public-nav-btn active" onclick="showPublicSection('info')">Tournament Info</button>
+                <button class="public-nav-btn" onclick="showPublicSection('teams')">Teams</button>
+                <button class="public-nav-btn" onclick="showPublicSection('standings')">Standings</button>
+            </div>
+
+            <div id="errorContainer"></div>
+            
+            <!-- Tournament Info Section -->
+            <div id="info" class="public-section active">
+                <div class="info-card">
+                    <h2>Tournament Information</h2>
+                    <div class="info-grid" id="tournamentInfo">
+                        <div class="loading">Loading tournament information...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Teams Section -->
+            <div id="teams" class="public-section">
+                <div class="standings-card">
+                    <div class="standings-header">Registered Teams</div>
+                    <div class="data-table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Team Name</th>
+                                    <th>Institution</th>
+                                    <th>Speaker 1</th>
+                                    <th>Speaker 2</th>
+                                </tr>
+                            </thead>
+                            <tbody id="teamsTableBody">
+                                <tr>
+                                    <td colspan="5" class="loading">Loading teams...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Standings Section -->
+            <div id="standings" class="public-section">
+                <div class="standings-card">
+                    <div class="standings-header">Current Standings</div>
+                    <div class="data-table-container">
+                        <table class="data-table standings-table">
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Team</th>
+                                    <th>Institution</th>
+                                    <th>Points</th>
+                                    <th>Wins</th>
+                                    <th>Speaker Points</th>
+                                </tr>
+                            </thead>
+                            <tbody id="standingsTableBody">
+                                <tr>
+                                    <td colspan="6" class="loading">Loading standings...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 OratorHub. Built with ❤️ for the debate community.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Get tournament slug from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const tournamentSlug = urlParams.get('slug');
+        
+        let tournamentData = null;
+        let refreshInterval = null;
+        
+        // Show section
+        function showPublicSection(sectionName) {
+            document.querySelectorAll('.public-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.querySelectorAll('.public-nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(sectionName).classList.add('active');
+            event.target.classList.add('active');
+        }
+        
+        // Load tournament data
+        async function loadTournamentData() {
+            if (!tournamentSlug) {
+                showError('No tournament specified. Please use a valid tournament link.');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/tournaments/public/${tournamentSlug}`);
+                
+                if (!response.ok) {
+                    throw new Error('Tournament not found or public display is disabled');
+                }
+                
+                tournamentData = await response.json();
+                
+                // Apply custom colors
+                if (tournamentData.primary_color) {
+                    document.documentElement.style.setProperty('--primary-color', tournamentData.primary_color);
+                }
+                if (tournamentData.secondary_color) {
+                    document.documentElement.style.setProperty('--secondary-color', tournamentData.secondary_color);
+                }
+                
+                // Display tournament header
+                document.getElementById('tournamentName').textContent = tournamentData.name;
+                
+                const details = `${tournamentData.format} • ${tournamentData.venue || 'Virtual'} • ${new Date(tournamentData.start_date).toLocaleDateString()}`;
+                document.getElementById('tournamentDetails').textContent = details;
+                
+                // Display logo if available
+                if (tournamentData.custom_logo_url) {
+                    const logo = document.getElementById('tournamentLogo');
+                    logo.src = tournamentData.custom_logo_url;
+                    logo.style.display = 'block';
+                }
+                
+                // Load tournament info
+                loadTournamentInfo();
+                
+                // Load teams and standings
+                loadTeams();
+                loadStandings();
+                
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+        
+        function loadTournamentInfo() {
+            const infoHtml = `
+                <div class="info-item">
+                    <div class="info-label">Format</div>
+                    <div class="info-value">${tournamentData.format}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Venue</div>
+                    <div class="info-value">${tournamentData.venue || 'TBD'}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Start Date</div>
+                    <div class="info-value">${new Date(tournamentData.start_date).toLocaleDateString()}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">End Date</div>
+                    <div class="info-value">${new Date(tournamentData.end_date).toLocaleDateString()}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Rounds</div>
+                    <div class="info-value">${tournamentData.num_rounds}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Status</div>
+                    <div class="info-value">${tournamentData.status.toUpperCase()}</div>
+                </div>
+            `;
+            
+            document.getElementById('tournamentInfo').innerHTML = infoHtml;
+            
+            if (tournamentData.description) {
+                const descHtml = `<div style="grid-column: 1/-1; margin-top: 1rem; padding: 1rem; background: var(--bg); border-radius: 0.5rem;">
+                    <h3>About</h3>
+                    <p>${tournamentData.description}</p>
+                </div>`;
+                document.getElementById('tournamentInfo').insertAdjacentHTML('beforeend', descHtml);
+            }
+        }
+        
+        async function loadTeams() {
+            try {
+                const response = await fetch(`/api/tournaments/public/${tournamentSlug}/teams`);
+                
+                if (!response.ok) {
+                    throw new Error('Failed to load teams');
+                }
+                
+                const teams = await response.json();
+                const tbody = document.getElementById('teamsTableBody');
+                
+                if (teams.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem;">No teams registered yet</td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = teams.map((team, index) => `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td><strong>${team.name}</strong></td>
+                        <td>${team.institution || '-'}</td>
+                        <td>${team.speaker1_name}</td>
+                        <td>${team.speaker2_name}</td>
+                    </tr>
+                `).join('');
+                
+            } catch (error) {
+                document.getElementById('teamsTableBody').innerHTML = 
+                    `<tr><td colspan="5" class="error-message">Error loading teams: ${error.message}</td></tr>`;
+            }
+        }
+        
+        async function loadStandings() {
+            try {
+                const response = await fetch(`/api/tournaments/public/${tournamentSlug}/standings`);
+                
+                if (!response.ok) {
+                    throw new Error('Failed to load standings');
+                }
+                
+                const standings = await response.json();
+                const tbody = document.getElementById('standingsTableBody');
+                
+                if (standings.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem;">No results available yet</td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = standings.map(team => {
+                    const rankClass = team.rank <= 3 ? `rank-${team.rank}` : 'rank-other';
+                    return `
+                        <tr>
+                            <td><span class="rank-badge ${rankClass}">${team.rank}</span></td>
+                            <td><strong>${team.name}</strong></td>
+                            <td>${team.institution || '-'}</td>
+                            <td><strong>${team.points}</strong></td>
+                            <td>${team.wins}</td>
+                            <td>${team.speaker_points.toFixed(1)}</td>
+                        </tr>
+                    `;
+                }).join('');
+                
+            } catch (error) {
+                document.getElementById('standingsTableBody').innerHTML = 
+                    `<tr><td colspan="6" class="error-message">Error loading standings: ${error.message}</td></tr>`;
+            }
+        }
+        
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            document.getElementById('errorContainer').appendChild(errorDiv);
+        }
+        
+        // Auto-refresh data every 30 seconds
+        function startAutoRefresh() {
+            refreshInterval = setInterval(() => {
+                if (tournamentData) {
+                    loadTeams();
+                    loadStandings();
+                }
+            }, 30000);
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTournamentData();
+            startAutoRefresh();
+        });
+        
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -114,6 +114,8 @@
                     <button class="tab-btn" data-tab="draw">Draw</button>
                     <button class="tab-btn" data-tab="results">Results</button>
                     <button class="tab-btn" data-tab="tab">Tab</button>
+                    <button class="tab-btn" data-tab="customize">Customize</button>
+                    <button class="tab-btn" data-tab="import">Import Data</button>
                 </div>
 
                 <!-- Tournament Tab -->
@@ -415,6 +417,89 @@
                                     </tbody>
                                 </table>
                             </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Customize Tab -->
+                <div id="customize" class="tab-content">
+                    <div class="card">
+                        <h3>Tournament Customization</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                            Customize the appearance of your tournament's public display page.
+                        </p>
+                        <form id="customizeForm" class="form">
+                            <div class="form-group">
+                                <label for="customLogoUrl">Logo URL</label>
+                                <input type="url" id="customLogoUrl" class="form-input" placeholder="https://example.com/logo.png">
+                                <small style="color: var(--text-secondary);">URL to your tournament logo image</small>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="primaryColor">Primary Color</label>
+                                    <input type="color" id="primaryColor" class="form-input" value="#3b82f6">
+                                </div>
+                                <div class="form-group">
+                                    <label for="secondaryColor">Secondary Color</label>
+                                    <input type="color" id="secondaryColor" class="form-input" value="#10b981">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="showPublicTab" checked>
+                                    Enable Public Display Tab
+                                </label>
+                                <small style="color: var(--text-secondary); display: block; margin-top: 0.5rem;">
+                                    Allow anyone to view tournament information via a public URL
+                                </small>
+                            </div>
+                            <div class="form-group" id="publicUrlDisplay" style="display: none;">
+                                <label>Public Display URL</label>
+                                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                    <input type="text" id="publicUrl" class="form-input" readonly>
+                                    <button type="button" class="btn btn-secondary" onclick="copyPublicUrl()">Copy</button>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save Customization</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Import Data Tab -->
+                <div id="import" class="tab-content">
+                    <div class="card">
+                        <h3>Import Registration Data</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                            Import speaker and team registrations from Google Forms exports or Excel files.
+                        </p>
+                        
+                        <div class="info-card" style="background: #eff6ff; border-left: 4px solid #3b82f6; padding: 1rem; margin-bottom: 1.5rem;">
+                            <h4 style="margin-top: 0;">Expected CSV/Excel Format</h4>
+                            <p>Your file should include the following columns (column names are case-insensitive):</p>
+                            <ul>
+                                <li><strong>email</strong> or <strong>Email Address</strong> - Required</li>
+                                <li><strong>name</strong> or <strong>Full Name</strong> - Optional</li>
+                                <li><strong>registration_type</strong> or <strong>Registration Type</strong> - "individual" or "team"</li>
+                                <li><strong>team_name</strong> or <strong>Team Name</strong> - For team registrations</li>
+                                <li><strong>partner_name</strong> or <strong>Partner Name</strong> - For team registrations</li>
+                                <li><strong>partner_email</strong> or <strong>Partner Email</strong> - For team registrations</li>
+                            </ul>
+                        </div>
+                        
+                        <form id="importForm" class="form">
+                            <div class="form-group">
+                                <label for="importFile">Select CSV or Excel File</label>
+                                <input type="file" id="importFile" class="form-input" accept=".csv,.xlsx,.xls" required>
+                                <small style="color: var(--text-secondary);">
+                                    Supported formats: CSV, XLSX, XLS
+                                </small>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Import Registrations</button>
+                        </form>
+                        
+                        <div id="importResults" style="display: none; margin-top: 1.5rem;">
+                            <h4>Import Results</h4>
+                            <div id="importResultsContent"></div>
                         </div>
                     </div>
                 </div>
@@ -766,5 +851,6 @@
     <script src="api-client.js"></script>
     <script src="script.js"></script>
     <script src="app-enhanced.js"></script>
+    <script src="tournament-custom.js"></script>
 </body>
 </html>

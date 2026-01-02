@@ -15,9 +15,12 @@ A modern, full-stack debate and public speaking tournament platform that surpass
 - **Complete Tournament Lifecycle**: Registration → Pairings → Judging → Results → Analytics
 - **Multiple Formats**: BP (British Parliamentary), APDA, WSDC, and various speech events
 - **Hybrid Event Support**: Seamlessly manage in-person, virtual, and hybrid tournaments
+- **Tournament Customization**: Custom branding with logos, colors, and public display options
+- **Public Display Tab**: Share tournament info and live standings via public URLs
 
 ### 📝 Advanced Registration System
 - **Multi-Form Registration**: Dynamic forms that adjust based on tournament type
+- **Bulk Import**: Import registrations from Google Forms CSV or Excel files
 - **Payment Integration**: Stripe/PayPal API for secure payment processing
 - **Document Upload**: Support for PDF, DOC, DOCX for cases and evidence
 - **Waitlist Management**: Automatic promotion when spots open
@@ -30,6 +33,7 @@ A modern, full-stack debate and public speaking tournament platform that surpass
 - **Real-time Tabulation**: Multiple scoring systems (BP, APDA, speech rubrics)
 - **Break Calculations**: Customizable criteria for break rounds
 - **Motion Management**: Timed motion release with info slides
+- **Custom Tournament URLs**: Unique slug-based URLs for each tournament
 
 ### ⚡ Real-Time Features
 - **Live Updates**: Server-Sent Events (SSE) for instant notifications
@@ -555,7 +559,11 @@ git push origin feature/your-feature-name
 
 - **GitHub Issues:** [Report bugs and request features](https://github.com/zayaanamohammedstu-prog/UFSTAB/issues)
 - **Discussions:** [Ask questions and share ideas](https://github.com/zayaanamohammedstu-prog/UFSTAB/discussions)
-- **Documentation:** [Full documentation](https://github.com/zayaanamohammedstu-prog/UFSTAB/wiki)
+- **Documentation:** 
+  - [Full Documentation](https://github.com/zayaanamohammedstu-prog/UFSTAB/wiki)
+  - [Tournament Customization Guide](TOURNAMENT_FEATURES.md)
+  - [API Documentation](API.md)
+  - [Setup Guide](SETUP.md)
 - **Email:** support@oratorhub.com
 
 ## 📄 License

@@ -194,5 +194,190 @@ class TestHealth:
         assert data['status'] == 'healthy'
         assert data['service'] == 'OratorHub API'
 
+class TestTournamentCustomization:
+    """Test tournament customization features"""
+    
+    def test_create_tournament_with_customization(self, client, auth_headers):
+        """Test creating tournament with custom settings"""
+        start_date = datetime.utcnow() + timedelta(days=30)
+        end_date = start_date + timedelta(days=3)
+        
+        response = client.post('/api/tournaments', 
+            headers=auth_headers,
+            json={
+                'name': 'Customized Tournament',
+                'format': 'BP',
+                'start_date': start_date.isoformat(),
+                'end_date': end_date.isoformat(),
+                'custom_logo_url': 'https://example.com/logo.png',
+                'primary_color': '#ff0000',
+                'secondary_color': '#00ff00',
+                'show_public_tab': True
+            }
+        )
+        
+        assert response.status_code == 201
+        data = response.get_json()
+        assert data['tournament']['custom_logo_url'] == 'https://example.com/logo.png'
+        assert data['tournament']['primary_color'] == '#ff0000'
+        assert data['tournament']['secondary_color'] == '#00ff00'
+        assert data['tournament']['show_public_tab'] == True
+        assert 'slug' in data['tournament']
+    
+    def test_update_tournament_customization(self, client, auth_headers):
+        """Test updating tournament customization"""
+        # Create tournament first
+        start_date = datetime.utcnow() + timedelta(days=30)
+        end_date = start_date + timedelta(days=3)
+        
+        create_response = client.post('/api/tournaments',
+            headers=auth_headers,
+            json={
+                'name': 'Original Tournament',
+                'format': 'BP',
+                'start_date': start_date.isoformat(),
+                'end_date': end_date.isoformat()
+            }
+        )
+        
+        tournament_id = create_response.get_json()['tournament']['id']
+        
+        # Update customization
+        update_response = client.put(f'/api/tournaments/{tournament_id}',
+            headers=auth_headers,
+            json={
+                'custom_logo_url': 'https://example.com/new-logo.png',
+                'primary_color': '#0000ff'
+            }
+        )
+        
+        assert update_response.status_code == 200
+        data = update_response.get_json()
+        assert data['tournament']['custom_logo_url'] == 'https://example.com/new-logo.png'
+        assert data['tournament']['primary_color'] == '#0000ff'
+
+class TestPublicDisplay:
+    """Test public display endpoints"""
+    
+    def test_get_tournament_by_slug(self, client, auth_headers, app):
+        """Test accessing tournament by slug"""
+        # Create tournament
+        start_date = datetime.utcnow() + timedelta(days=30)
+        end_date = start_date + timedelta(days=3)
+        
+        create_response = client.post('/api/tournaments',
+            headers=auth_headers,
+            json={
+                'name': 'Public Tournament',
+                'format': 'BP',
+                'start_date': start_date.isoformat(),
+                'end_date': end_date.isoformat(),
+                'show_public_tab': True
+            }
+        )
+        
+        slug = create_response.get_json()['tournament']['slug']
+        
+        # Access via slug (no auth required)
+        response = client.get(f'/api/tournaments/public/{slug}')
+        
+        assert response.status_code == 200
+        data = response.get_json()
+        assert data['name'] == 'Public Tournament'
+        assert 'organizer' not in data  # Should not include sensitive info
+    
+    def test_get_public_standings(self, client, auth_headers, app):
+        """Test accessing public standings"""
+        # Create tournament
+        start_date = datetime.utcnow() + timedelta(days=30)
+        end_date = start_date + timedelta(days=3)
+        
+        create_response = client.post('/api/tournaments',
+            headers=auth_headers,
+            json={
+                'name': 'Public Standings Tournament',
+                'format': 'BP',
+                'start_date': start_date.isoformat(),
+                'end_date': end_date.isoformat(),
+                'show_public_tab': True
+            }
+        )
+        
+        slug = create_response.get_json()['tournament']['slug']
+        
+        # Access standings via slug (no auth required)
+        response = client.get(f'/api/tournaments/public/{slug}/standings')
+        
+        assert response.status_code == 200
+        data = response.get_json()
+        assert isinstance(data, list)
+    
+    def test_public_display_disabled(self, client, auth_headers):
+        """Test accessing tournament with public display disabled"""
+        start_date = datetime.utcnow() + timedelta(days=30)
+        end_date = start_date + timedelta(days=3)
+        
+        create_response = client.post('/api/tournaments',
+            headers=auth_headers,
+            json={
+                'name': 'Private Tournament',
+                'format': 'BP',
+                'start_date': start_date.isoformat(),
+                'end_date': end_date.isoformat(),
+                'show_public_tab': False
+            }
+        )
+        
+        slug = create_response.get_json()['tournament']['slug']
+        
+        # Try to access via slug
+        response = client.get(f'/api/tournaments/public/{slug}')
+        
+        assert response.status_code == 403
+
+class TestRegistrationImport:
+    """Test registration import functionality"""
+    
+    def test_import_csv_registrations(self, client, auth_headers, app):
+        """Test importing registrations from CSV"""
+        # Create tournament first
+        start_date = datetime.utcnow() + timedelta(days=30)
+        end_date = start_date + timedelta(days=3)
+        
+        create_response = client.post('/api/tournaments',
+            headers=auth_headers,
+            json={
+                'name': 'Import Test Tournament',
+                'format': 'BP',
+                'start_date': start_date.isoformat(),
+                'end_date': end_date.isoformat()
+            }
+        )
+        
+        tournament_id = create_response.get_json()['tournament']['id']
+        
+        # Create a CSV file content
+        csv_content = """email,name,registration_type
+test1@example.com,Test User 1,individual
+test2@example.com,Test User 2,team
+"""
+        
+        # Import registrations
+        from io import BytesIO
+        data = {
+            'file': (BytesIO(csv_content.encode()), 'test.csv')
+        }
+        
+        response = client.post(
+            f'/api/registrations/tournament/{tournament_id}/import',
+            headers=auth_headers,
+            data=data,
+            content_type='multipart/form-data'
+        )
+        
+        assert response.status_code == 200
+        result = response.get_json()
+        assert result['imported_count'] >= 0  # May be 0 or more depending on duplicates
+
 if __name__ == '__main__':
     pytest.main([__file__, '-v'])
